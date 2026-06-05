@@ -1,71 +1,94 @@
-# Getting Started with Create React App
+# 🌦 HaliWise Events
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> Smart weather-aware event planning and outfit recommendation platform.
 
-## Available Scripts
+Live demo: 
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## What It Does
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+HaliWise Events connects to the **Weather-AI API** to fetch real-time forecasts and transform raw data into actionable event planning intelligence:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Weather Suitability Score** (0–100) tailored to your event type
+- **Venue Recommendation** — Outdoor, Indoor, or Hybrid, based on conditions
+- **Risk Assessment** — Rain, Wind, Heat, and Cold risk levels
+- **Outfit Suggestions** — Weather-appropriate attire for your event
+- **Planning Tips** — Practical advice based on forecast conditions
+- **5-Day Forecast** summary
+- **Auto-detect location** via Weather-AI IP lookup
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Tech Stack
 
-### `npm run build`
+| Layer        | Technology                  |
+|--------------|-----------------------------|
+| Frontend     | React (Create React App)    |
+| Styling      | Tailwind CSS v3             |
+| Routing      | React Router DOM v6         |
+| API          | Weather-AI (`api.weather-ai.co`) |
+| Geocoding    | OpenStreetMap Nominatim     |
+| Deployment   | Vercel                     |
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Getting Started
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 1. Clone the repo
 
-### `npm run eject`
+```bash
+git clone https://github.com/drusykhulwi/haliwise.git
+cd haliwise
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 2. Install dependencies
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+npm install
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 3. Set up your API key
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Create a `.env` file in the project root:
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Then edit `.env` and replace the placeholder with your real key:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```
+REACT_APP_WEATHER_API_KEY=wai_your_key_here
+```
 
-### Code Splitting
+Get your key from [weather-ai.co](https://weather-ai.co).
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+> Never commit your `.env` file. It is already in `.gitignore`.
 
-### Analyzing the Bundle Size
+### 4. Run locally
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```bash
+npm start
+```
 
-### Making a Progressive Web App
+Open [http://localhost:3000](http://localhost:3000)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## API Endpoints Used
 
-### Deployment
+| Endpoint              | Purpose                                  |
+|-----------------------|------------------------------------------|
+| `GET /v1/weather`     | Fetch forecast by coordinates (lat/lon)  |
+| `GET /v1/weather-geo` | Auto-detect location from IP + forecast  |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+All requests use `units=metric` and the **Free plan** (7-day forecast).
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# haliwise
+## Environment Variables
+
+| Variable                      | Required | Description            |
+|-------------------------------|----------|------------------------|
+| `REACT_APP_WEATHER_API_KEY`   | Yes   | Your Weather-AI API key|
+
+---
