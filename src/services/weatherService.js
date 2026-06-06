@@ -1,63 +1,59 @@
-import { enrichWeatherResponse } from '../utils/parseWeather';
+import { enrichWeatherResponse, reverseGeocode } from '../utils/parseWeather';
 
-/**
- * In production (Vercel), we call our own /api/* serverless proxies to avoid CORS.
- * In local dev, CRA's dev server doesn't need a proxy since we call the API directly
- * and browsers allow localhost cross-origin requests during development.
- */
 const IS_PROD = process.env.NODE_ENV === 'production';
-const PROXY_BASE = '/api';
-const DIRECT_BASE = 'https://api.weather-ai.co/v1';
+const PROXY   = '/api';
+const DIRECT  = 'https://api.weather-ai.co/v1';
 
 function directHeaders() {
   return { Authorization: `Bearer ${process.env.REACT_APP_WEATHER_API_KEY}` };
 }
 
-export async function fetchWeatherByCoords(lat, lon, locationName = '') {
-  let res;
+export async function fetchWeatherByCoords(lat, lon, userTypedLocation = '') {
+  const url = IS_PROD
+    ? `${PROXY}/weather?lat=${lat}&lon=${lon}&days=7&units=metric`
+    : `${DIRECT}/weather?lat=${lat}&lon=${lon}&days=7&units=metric`;
 
-  if (IS_PROD) {
-    // Call our Vercel proxy — no API key or CORS needed client-side
-    res = await fetch(`${PROXY_BASE}/weather?lat=${lat}&lon=${lon}&days=7&units=metric`);
-  } else {
-    res = await fetch(
-      `${DIRECT_BASE}/weather?lat=${lat}&lon=${lon}&days=7&units=metric`,
-      { headers: directHeaders() }
-    );
-  }
-
+  const res = await fetch(url, IS_PROD ? {} : { headers: directHeaders() });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.message || `Weather API error: ${res.status}`);
   }
 
-  const raw = await res.json();
-  const enriched = await enrichWeatherResponse(raw);
+  const raw      = await res.json();
+  const enriched = enrichWeatherResponse(raw); // synchronous, never throws
 
-  // If reverse geocode only returned a short country code, prefer the user's typed location
-  if (!enriched.resolvedLocation || enriched.resolvedLocation.length <= 3) {
-    enriched.resolvedLocation = locationName || 'Your Location';
+  // Use what the user typed as the display name — it's already what they expect
+  // Fall back to reverse geocode only if they used auto-detect (no typed input)
+  let resolvedLocation = userTypedLocation;
+  if (!resolvedLocation) {
+    resolvedLocation = await reverseGeocode(raw.location?.lat, raw.location?.lon);
   }
-  return enriched;
+  if (!resolvedLocation) {
+    resolvedLocation = raw.location?.timezone?.split('/').pop()?.replace(/_/g, ' ') ?? 'Your Location';
+  }
+
+  return { ...enriched, resolvedLocation };
 }
 
 export async function fetchWeatherByGeo() {
-  let res;
+  const url = IS_PROD
+    ? `${PROXY}/weather-geo?days=7&units=metric`
+    : `${DIRECT}/weather-geo?ip=auto&days=7&units=metric`;
 
-  if (IS_PROD) {
-    res = await fetch(`${PROXY_BASE}/weather-geo?days=7&units=metric`);
-  } else {
-    res = await fetch(
-      `${DIRECT_BASE}/weather-geo?ip=auto&days=7&units=metric`,
-      { headers: directHeaders() }
-    );
-  }
-
+  const res = await fetch(url, IS_PROD ? {} : { headers: directHeaders() });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.message || `Geo weather error: ${res.status}`);
   }
 
-  const raw = await res.json();
-  return enrichWeatherResponse(raw);
+  const raw      = await res.json();
+  const enriched = enrichWeatherResponse(raw);
+
+  // Reverse geocode to get city name from the detected lat/lon
+  let resolvedLocation = await reverseGeocode(raw.location?.lat, raw.location?.lon);
+  if (!resolvedLocation) {
+    resolvedLocation = raw.location?.timezone?.split('/').pop()?.replace(/_/g, ' ') ?? 'Your Location';
+  }
+
+  return { ...enriched, resolvedLocation };
 }
