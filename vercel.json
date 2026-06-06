@@ -1,0 +1,21 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "functions": {
+    "api/weather.js": {
+      "memory": 128,
+      "maxDuration": 10
+    },
+    "api/weather-geo.js": {
+      "memory": 128,
+      "maxDuration": 10
+    }
+  },
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/(.*)",     "dest": "/index.html" }
+  ],
+  "env": {
+    "REACT_APP_WEATHER_API_KEY": "@react_app_weather_api_key"
+  }
+}
