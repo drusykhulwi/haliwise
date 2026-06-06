@@ -170,7 +170,7 @@ Open `.env` and replace the placeholder:
 REACT_APP_WEATHER_API_KEY=wai_your_actual_key_here
 ```
 
-> ⚠️ Never commit `.env` — it is already in `.gitignore`.
+> Never commit `.env` — it is already in `.gitignore`.
 
 ### 4. Run locally
 
@@ -188,7 +188,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 | Variable | Required | Description |
 |---|---|---|
-| `REACT_APP_WEATHER_API_KEY` | ✅ Yes | Your Weather-AI API key (`wai_...`) |
+| `REACT_APP_WEATHER_API_KEY` | Yes | Your Weather-AI API key (`wai_...`) |
 
 ---
 
